@@ -12,12 +12,16 @@ start_key = KEY_RIGHT
 
 HEIGHT, WIDTH = 6*3,10*3
 FPS = 5
-
-
+"""
+    This is the "map"
+"""
 def create_grid(width, height):
     return [["░" for x in range(width-1)] for y in range(height-1)]
 
-
+"""
+    create food on a random segment in level
+    it can't be placed on a segment, where the snake is
+"""
 def create_food(grid, snake):
     while True:
         x, y = randint(0, len(grid[0])-1), randint(0, len(grid)-1)
@@ -28,16 +32,26 @@ def create_food(grid, snake):
         else:
             return Tile(y, x, "+")
 
-
+"""
+    Check if there is a collision on this segment
+"""
 def collision(a, b):
     return a[:2] == b[:2]
 
 
+"""
+    draw the grid, including background, snake and food
+"""
 def render(screen, grid):
     for y, row in enumerate(grid):
        for x, chr in enumerate(row):
                screen.addch(y,x,chr)
 
+"""
+    handle key events,
+    check for collision on key event,
+    move the snake
+"""
 def movement(key, snake, food, grid, old_key):
     head, *tail = snake
     y,x,chr = head
@@ -80,12 +94,22 @@ def movement(key, snake, food, grid, old_key):
     return snake, food
 
 
+"""
+    main function which has a while/True, here some events happen:
+    - draw the level_grid
+    - Check if User want's to exit by ESC
+    - move snake, draw create_food
+    - check if game is over
+    - calculate speed of snake depending on its length
+"""
 with create_window(WIDTH, HEIGHT) as screen:
     old_key = start_key
     food = None
     while True:
         level_grid = create_grid(WIDTH, HEIGHT)
         key = screen.getch()
+
+        # No key was pressed yet
         if key == -1:
             key = old_key
 
@@ -109,4 +133,6 @@ with create_window(WIDTH, HEIGHT) as screen:
 
         render(screen, level_grid)
         old_key = key
+
+        # wait some time for the next loop iteration
         sleep(max(1 / (FPS + len(snake)), 1/30))
